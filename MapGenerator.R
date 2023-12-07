@@ -19,7 +19,7 @@ data <- st_read("data/kontur_population_IN_20231101.gpkg")
 #If US, one can use tigris directly
 #st <- states()
 
-wb_sf = st_read(dsn="data/WestBengal/WB.gpkg")
+state_sf = st_read(dsn="data/Rajasthan.gpkg")
 
 # set wb_sf crs to crs of data
 
@@ -27,23 +27,23 @@ wb_sf = st_read(dsn="data/WestBengal/WB.gpkg")
  # filter(NAME == "Florida") |> 
   #st_transform(crs = st_crs(data))
 
-wb_sf <- wb_sf |>
+state_sf <- state_sf |>
   st_transform(crs = st_crs(data))
 
 # check with map
 
-wb_sf |> 
+state_sf |> 
   ggplot() +
   geom_sf()
 
 
 
 # do intersection on data to limit kontur to West Bengal
-st_wb <- st_intersection(data, wb_sf)
+st_state <- st_intersection(data, state_sf)
 
 # define aspect ratio based on bounding box
 
-bb <- st_bbox(st_wb)
+bb <- st_bbox(st_state)
 
 bottom_left <- st_point(c(bb[["xmin"]], bb[["ymin"]])) |> 
   st_sfc(crs = st_crs(data))
@@ -54,7 +54,7 @@ bottom_right <- st_point(c(bb[["xmax"]], bb[["ymin"]])) |>
 
 # check by plotting points
 
-wb_sf |> 
+state_sf |> 
   ggplot() +
   geom_sf() +
   geom_sf(data = bottom_left) +
@@ -84,20 +84,20 @@ if (width > height) {
 
 size <- 5000
 
-wb_rast <- st_rasterize(st_wb, 
+state_rast <- st_rasterize(st_state, 
                              nx = floor(size * w_ratio),
                              ny = floor(size * h_ratio))
 
-mat <- matrix(wb_rast$population, 
+mat <- matrix(state_rast$population, 
               nrow = floor(size * w_ratio),
               ncol = floor(size * h_ratio))
 
 # create color palette
 
-c1 <- met.brewer("Tam", direction = -1)
+c1 <- met.brewer("Paquin", direction = -1)
 swatchplot(c1)
 
-texture <- grDevices::colorRampPalette(c1, bias = 2)(256)
+texture <- grDevices::colorRampPalette(c1, bias = 3)(256)
 swatchplot(texture)
 
 # plot that 3d thing!
@@ -110,11 +110,11 @@ mat |>
           zscale = 100/5,
           solid = FALSE,
           shadowdepth = 0,
-          theta = -60,
-          phi = 60,
-          zoom = .9)
+          theta = -115,
+          phi = 40,
+          zoom = .7)
 
-render_camera(theta = -60, phi = 60, zoom = 0.9)
+render_camera(theta = -115, phi = 40, zoom = 0.7)
 
 outfile <- "images/final_plot.png"
 
@@ -127,13 +127,13 @@ outfile <- "images/final_plot.png"
   render_highquality(
     filename = outfile,
     interactive = FALSE,
-    lightdirection = c(-90,-90, -100, -100),
+    lightdirection = c(200,200, 210, 210),
     lightaltitude = c(10, 70, 10, 70),
-    lightcolor = c(c1[2], "white", c1[7], "white"),
+    lightcolor = c(c1[3], "white", c1[8], "white"),
     lightintensity = c(750,50, 1000, 50),
     samples = 450,#100,
-    width = 6000,#6000,
-    height = 6000#6000
+    width = 5000,#6000,
+    height = 5000#6000
   )
   end_time <- Sys.time()
   diff <- end_time - start_time

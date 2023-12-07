@@ -7,10 +7,10 @@ library(stringr)
 
 img <- image_read("images/final_plot.png")
 
-colors <- met.brewer("Tam")
+colors <- met.brewer("Paquin")
 swatchplot(colors)
 
-text_color <- darken(colors[7], .25)
+text_color <- darken(colors[2], .25)
 swatchplot(text_color)
 
 annot <- glue("This map shows population density of Florida. ",
@@ -21,16 +21,16 @@ annot <- glue("This map shows population density of Florida. ",
 img |> 
   image_crop(gravity = "center",
              geometry = "5000x5000+0+150") |> 
-  image_annotate(text = glue("{str_to_title('west bengal')}"),
-                 gravity = "west",
-                 location = "+400+600",
+  image_annotate(text = glue("{str_to_title('Rajasthan')}"),
+                 gravity = "northeast",
+                 location = "+400+300",
                  color = text_color,
                  size = 200,
                  weight = 700,
                  font = "Surveyor") |>
   image_annotate(text = glue("India"),
-                 gravity = "west",
-                 location = "+750+800",
+                 gravity = "northeast",
+                 location = "+750+600",
                  color = text_color,
                  size = 150,
                  weight = 600,
